@@ -1,0 +1,56 @@
+# Pipeline para construir y desplegar una API de Strapi en Azure App Service
+
+trigger:
+  - main  # Ejecuta el pipeline en cada push a la rama main
+
+pool:
+  vmImage: 'ubuntu-latest'  # Usa un agente basado en Ubuntu
+
+steps:
+  # Instala Node.js
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '20.x'  # Usa la versión de Node.js compatible con tu Strapi
+    displayName: 'Instalar Node.js'
+
+  # Instala dependencias
+  - script: |
+      npm install
+    displayName: 'Instalar dependencias'
+
+  # Construye el proyecto Strapi
+  - script: |
+      npm run build
+    displayName: 'Construir Strapi'
+    env:
+      NODE_ENV: production
+
+  # Archiva los archivos para el despliegue
+  - task: ArchiveFiles@2
+    inputs:
+      rootFolderOrFile: '$(System.DefaultWorkingDirectory)'
+      includeRootFolder: false
+      archiveType: 'zip'
+      archiveFile: '$(Build.ArtifactStagingDirectory)/strapi-app.zip'
+      replaceExistingArchive: true
+    displayName: 'Archivar archivos'
+
+  # Publica el artefacto
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathToPublish: '$(Build.ArtifactStagingDirectory)'
+      artifactName: 'drop'
+      publishLocation: 'Container'
+    displayName: 'Publicar artefacto'
+
+  # Despliega a Azure App Service
+  - task: AzureRmWebAppDeployment@4
+    inputs:
+      ConnectionType: 'AzureRM'
+      azureSubscription: '<Nombre-de-tu-conexión-de-servicio>'  # Reemplaza con el nombre de tu conexión
+      appType: 'webAppLinux'
+      WebAppName: 'algira-strapi'
+      packageForLinux: '$(Build.ArtifactStagingDirectory)/strapi-app.zip'
+      enableCustomDeployment: true
+      DeploymentType: 'zipDeploy'
+    displayName: 'Desplegar a Azure App Service'
