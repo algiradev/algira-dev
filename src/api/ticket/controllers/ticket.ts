@@ -2,6 +2,33 @@ import { stat } from "fs";
 import type { Context } from "koa";
 
 export default {
+  async getPurshasedTickets(ctx: Context) {
+    try {
+      // Convertir raffleId a número
+      const raffleId = parseInt(ctx.query.raffleId as string, 10);
+
+      if (isNaN(raffleId)) {
+        ctx.throw(400, "raffleId is required and must be a number");
+      }
+
+      // Obtener tickets ocupados de la rifa
+      const tickets = await strapi.db.query("api::ticket.ticket").findMany({
+        where: { raffleId },
+        select: ["number"], // solo necesitamos el número
+        // populate: { raffle: { fields: ["title", "id"] } } // opcional
+      });
+
+      if (!tickets || tickets.length === 0) {
+        return ctx.notFound("No hay tickets ocupados para esta rifa");
+      }
+
+      // Enviar resultado
+      ctx.send({ takenNumbers: tickets.map((t) => t.number) });
+    } catch (err) {
+      strapi.log.error("Error fetching tickets:", err);
+      ctx.badRequest("No se pudo obtener los tickets");
+    }
+  },
   // ===============================
   //  FIND ALL TICKETS
   // ===============================
@@ -29,7 +56,7 @@ export default {
 
     try {
       const ticket = await strapi.db.query("api::ticket.ticket").findOne({
-        where: { id: parseInt(id, 10), status_ticket: "a" },
+        where: { number: parseInt(id, 10), status_ticket: "a" },
         populate: {
           raffle: true,
         },

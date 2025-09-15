@@ -139,6 +139,8 @@ export default {
       const token = strapi.service("plugin::users-permissions.jwt").issue(
         {
           id: user.id,
+          email: user.email,
+          username: user.username,
         },
         { expiresIn: "1d" }
       );

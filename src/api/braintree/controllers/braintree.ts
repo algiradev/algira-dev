@@ -1,5 +1,6 @@
 import type { Context } from "koa";
 import gateway from "../../../extensions/braintree";
+import email from "../../auth/services/email";
 
 export default {
   // Genera clientToken
@@ -24,14 +25,13 @@ export default {
       const { paymentMethodNonce, amount, raffles, tickets } = body as {
         paymentMethodNonce: string;
         amount: number;
-        raffles: number[]; // IDs de rifas
-        tickets: { number: number; raffleId: number }[]; // tickets seleccionados
+        raffles: number[];
+        tickets: { number: number; raffleId: number }[];
       };
 
       if (!paymentMethodNonce) ctx.throw(400, "paymentMethodNonce is required");
       if (!amount || amount <= 0) ctx.throw(400, "Valid amount is required");
 
-      // Procesar transacción en Braintree
       const result = await gateway.transaction.sale({
         amount: amount.toFixed(2),
         paymentMethodNonce,
@@ -45,7 +45,6 @@ export default {
 
       const transaction = result.transaction;
 
-      // 1️⃣ Crear la invoice
       const newInvoice = await strapi.entityService.create(
         "api::invoice.invoice",
         {
@@ -55,7 +54,7 @@ export default {
             transactionId: transaction.id,
             transactionStatus: transaction.status,
             transactionDate: new Date(transaction.createdAt),
-            users_algira: ctx.state.user?.id, // usuario logueado
+            users_algira: ctx.state.user?.id,
             raffles: ctx.request.body.raffles,
           },
           populate: ["raffles", "users_algira"],
@@ -103,6 +102,46 @@ export default {
           },
         });
       }
+
+      // Después de crear la invoice y los tickets
+      // Después de crear la invoice y los tickets
+      const userEmail = ctx.state.user?.email;
+      const userName = ctx.state.user?.username ?? "Usuario";
+
+      // Agrupar tickets por raffle
+      const ticketsByRaffle: Record<number, number[]> = {};
+      ticketsData.forEach((t) => {
+        if (!ticketsByRaffle[t.raffleId]) ticketsByRaffle[t.raffleId] = [];
+        ticketsByRaffle[t.raffleId].push(t.number);
+      });
+
+      // Traer títulos de las rifas
+      const rafflesRecords = await strapi.db
+        .query("api::raffle.raffle")
+        .findMany({
+          where: { id: { $in: raffles } },
+          select: ["id", "title"], // o "title" si tu campo se llama así
+        });
+
+      // Construir el HTML del correo
+      let rafflesHtml = "";
+      for (const raffle of rafflesRecords) {
+        const numbers = ticketsByRaffle[raffle.id]?.join(", ") ?? "";
+        rafflesHtml += `<p>Rifa: "${raffle.title}"<br>Tickets: ${numbers}</p>`;
+      }
+
+      const subject = "Detalles de tu compra en Algira";
+      const html = `
+        <p>Hola ${userName},</p>
+        <p>Gracias por tu compra! Aquí tienes los detalles:</p>
+        <p>Monto: $${amount.toFixed(2)}</p>
+        ${rafflesHtml}
+        <p>¡Disfruta tu rifa!</p>
+      `;
+
+      // Enviar el correo
+      await email.sendEmail({ to: userEmail, subject, html });
+      console.log("Correo enviado a", userEmail);
 
       ctx.send({
         success: true,
