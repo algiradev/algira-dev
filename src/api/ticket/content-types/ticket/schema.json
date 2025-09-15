@@ -1,0 +1,33 @@
+{
+  "kind": "collectionType",
+  "collectionName": "tickets",
+  "info": {
+    "singularName": "ticket",
+    "pluralName": "tickets",
+    "displayName": "Ticket"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "code": {
+      "type": "uid"
+    },
+    "number": {
+      "type": "integer"
+    },
+    "status_ticket": {
+      "type": "string",
+      "default": "a",
+      "minLength": 1,
+      "maxLength": 1
+    },
+    "raffleId": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::raffle.raffle",
+      "inversedBy": "tickets"
+    }
+  }
+}

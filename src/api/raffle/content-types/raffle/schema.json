@@ -1,0 +1,65 @@
+{
+  "kind": "collectionType",
+  "collectionName": "raffles",
+  "info": {
+    "singularName": "raffle",
+    "pluralName": "raffles",
+    "displayName": "Raffle",
+    "description": "Rifas disponibles",
+    "mainField": "title"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "price": {
+      "type": "decimal",
+      "required": true
+    },
+    "startDate": {
+      "type": "datetime"
+    },
+    "endDate": {
+      "type": "datetime"
+    },
+    "maxQuantity": {
+      "type": "integer"
+    },
+    "minQuantity": {
+      "type": "integer"
+    },
+    "winnerTicket": {
+      "type": "string",
+      "maxLength": 45
+    },
+    "status_raffle": {
+      "type": "string",
+      "default": "a",
+      "minLength": 1,
+      "maxLength": 1
+    },
+    "tickets": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::ticket.ticket",
+      "mappedBy": "raffleId"
+    },
+    "product": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::product.product",
+      "inversedBy": "raffles"
+    },
+    "invoices": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::invoice.invoice",
+      "mappedBy": "raffles"
+    }
+  }
+}

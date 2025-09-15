@@ -1,0 +1,45 @@
+{
+  "kind": "collectionType",
+  "collectionName": "invoices",
+  "info": {
+    "singularName": "invoice",
+    "pluralName": "invoices",
+    "displayName": "Invoice"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "transactionId": {
+      "type": "string",
+      "maxLength": 45
+    },
+    "transactionDate": {
+      "type": "datetime"
+    },
+    "total": {
+      "type": "decimal"
+    },
+    "currency": {
+      "type": "string",
+      "maxLength": 45
+    },
+    "transactionStatus": {
+      "type": "string",
+      "maxLength": 250
+    },
+    "users_algira": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::users-algira.users-algira",
+      "inversedBy": "invoices"
+    },
+    "raffles": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::raffle.raffle",
+      "inversedBy": "invoices"
+    }
+  }
+}

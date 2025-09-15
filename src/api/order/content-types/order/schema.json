@@ -1,0 +1,42 @@
+{
+  "kind": "collectionType",
+  "collectionName": "orders",
+  "info": {
+    "singularName": "order",
+    "pluralName": "orders",
+    "displayName": "Ordered"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "transactionId": {
+      "type": "string",
+      "maxLength": 45
+    },
+    "transactionDate": {
+      "type": "datetime"
+    },
+    "amount": {
+      "type": "decimal"
+    },
+    "currency": {
+      "type": "string",
+      "maxLength": 45
+    },
+    "transactionStatus": {
+      "type": "string",
+      "maxLength": 250
+    },
+    "code": {
+      "type": "uid"
+    },
+    "users_algira": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::users-algira.users-algira",
+      "inversedBy": "orders"
+    }
+  }
+}

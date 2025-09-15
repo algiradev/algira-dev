@@ -1,0 +1,29 @@
+{
+  "kind": "collectionType",
+  "collectionName": "braintree_services",
+  "info": {
+    "singularName": "braintree-service",
+    "pluralName": "braintree-services",
+    "displayName": "BraintreeService"
+  },
+  "options": {
+    "comment": ""
+  },
+  "attributes": {
+    "userId": {
+      "type": "integer"
+    },
+    "customerId": {
+      "type": "string"
+    },
+    "clientToken": {
+      "type": "string"
+    },
+    "expirationDate": {
+      "type": "datetime"
+    },
+    "status": {
+      "type": "string"
+    }
+  }
+}

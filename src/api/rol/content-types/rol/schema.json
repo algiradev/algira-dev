@@ -1,0 +1,33 @@
+{
+  "kind": "collectionType",
+  "collectionName": "rols",
+  "info": {
+    "singularName": "rol",
+    "pluralName": "rols",
+    "displayName": "Rol"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "maxLength": 45,
+      "required": true
+    },
+    "status_rol": {
+      "type": "string",
+      "default": "a",
+      "minLength": 1,
+      "maxLength": 1,
+      "required": true
+    },
+    "users_algiras": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::users-algira.users-algira",
+      "mappedBy": "rolId"
+    }
+  }
+}

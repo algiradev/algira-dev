@@ -1,0 +1,108 @@
+{
+  "kind": "collectionType",
+  "collectionName": "users_algiras",
+  "info": {
+    "singularName": "users-algira",
+    "pluralName": "users-algiras",
+    "displayName": "Users_algira"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "username": {
+      "type": "string",
+      "maxLength": 45,
+      "required": true,
+      "unique": true
+    },
+    "email": {
+      "type": "email",
+      "required": true,
+      "maxLength": 45,
+      "unique": true
+    },
+    "password": {
+      "type": "password",
+      "required": true,
+      "maxLength": 100
+    },
+    "firstName": {
+      "type": "string",
+      "maxLength": 45,
+      "required": true
+    },
+    "lastName": {
+      "type": "string",
+      "maxLength": 45,
+      "required": true
+    },
+    "phoneNumber": {
+      "type": "string",
+      "maxLength": 20
+    },
+    "zipCode": {
+      "type": "string",
+      "maxLength": 45
+    },
+    "address": {
+      "type": "string",
+      "maxLength": 60
+    },
+    "avatar": {
+      "type": "string",
+      "maxLength": 100
+    },
+    "token": {
+      "type": "string",
+      "maxLength": 250
+    },
+    "confirmEmail": {
+      "type": "boolean",
+      "default": false
+    },
+    "tokenEmail": {
+      "type": "string",
+      "maxLength": 100
+    },
+    "city": {
+      "type": "string",
+      "maxLength": 45
+    },
+    "businessId": {
+      "type": "integer"
+    },
+    "countryId": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::country.country",
+      "inversedBy": "users_algiras"
+    },
+    "rolId": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::rol.rol",
+      "inversedBy": "users_algiras"
+    },
+    "status_user": {
+      "type": "string",
+      "default": "a",
+      "minLength": 1,
+      "maxLength": 1,
+      "required": true
+    },
+    "orders": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::order.order",
+      "mappedBy": "users_algira"
+    },
+    "invoices": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::invoice.invoice",
+      "mappedBy": "users_algira"
+    }
+  }
+}

@@ -1,0 +1,94 @@
+{
+  "kind": "collectionType",
+  "collectionName": "up_users",
+  "info": {
+    "name": "User",
+    "description": "",
+    "singularName": "user",
+    "pluralName": "users",
+    "displayName": "User"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "username": {
+      "type": "string",
+      "maxLength": 45,
+      "required": true,
+      "unique": true
+    },
+    "email": {
+      "type": "email",
+      "required": true,
+      "minLength": 3,
+      "maxLength": 45,
+      "unique": true
+    },
+    "password": {
+      "type": "password",
+      "required": true,
+      "minLength": 5,
+      "maxLength": 100
+    },
+    "firstName": {
+      "type": "string",
+      "maxLength": 45,
+      "required": true
+    },
+    "lastName": {
+      "type": "string",
+      "maxLength": 45,
+      "required": true
+    },
+    "phoneNumber": {
+      "type": "string",
+      "maxLength": 20
+    },
+    "zipCode": {
+      "type": "string",
+      "maxLength": 45
+    },
+    "address": {
+      "type": "string",
+      "maxLength": 60
+    },
+    "avatar": {
+      "type": "string",
+      "maxLength": 100
+    },
+    "token": {
+      "type": "text",
+      "private": true,
+      "maxLength": 250
+    },
+    "tokenEmail": {
+      "type": "string",
+      "private": true,
+      "maxLength": 100
+    },
+    "city": {
+      "type": "string",
+      "maxLength": 45
+    },
+    "businessId": {
+      "type": "integer"
+    },
+    "countryId": {
+      "type": "integer"
+    },
+    "status_user": {
+      "type": "string",
+      "default": "a",
+      "minLength": 1,
+      "maxLength": 1
+    },
+    "role": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.role",
+      "inversedBy": "users"
+    }
+  }
+}
