@@ -13,14 +13,10 @@ export default {
 
       // Obtener tickets ocupados de la rifa
       const tickets = await strapi.db.query("api::ticket.ticket").findMany({
-        where: { raffleId },
+        where: { raffle: raffleId },
         select: ["number"], // solo necesitamos el número
         // populate: { raffle: { fields: ["title", "id"] } } // opcional
       });
-
-      if (!tickets || tickets.length === 0) {
-        return ctx.notFound("No hay tickets ocupados para esta rifa");
-      }
 
       // Enviar resultado
       ctx.send({ takenNumbers: tickets.map((t) => t.number) });

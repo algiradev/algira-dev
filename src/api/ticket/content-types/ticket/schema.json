@@ -23,10 +23,16 @@
       "minLength": 1,
       "maxLength": 1
     },
-    "raffleId": {
+    "raffle": {
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::raffle.raffle",
+      "inversedBy": "tickets"
+    },
+    "invoiceId": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::invoice.invoice",
       "inversedBy": "tickets"
     }
   }

@@ -1,4 +1,5 @@
 import type { Context } from "koa";
+import ticket from "../../ticket/controllers/ticket";
 
 export default {
   // ===============================
@@ -95,6 +96,7 @@ export default {
               image: true,
             },
           },
+          tickets: true,
         },
       });
 

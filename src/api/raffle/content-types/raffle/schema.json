@@ -47,19 +47,13 @@
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::ticket.ticket",
-      "mappedBy": "raffleId"
+      "mappedBy": "raffle"
     },
     "product": {
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::product.product",
       "inversedBy": "raffles"
-    },
-    "invoices": {
-      "type": "relation",
-      "relation": "manyToMany",
-      "target": "api::invoice.invoice",
-      "mappedBy": "raffles"
     }
   }
 }
