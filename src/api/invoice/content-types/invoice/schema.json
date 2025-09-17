@@ -35,11 +35,11 @@
       "target": "api::users-algira.users-algira",
       "inversedBy": "invoices"
     },
-    "raffles": {
+    "tickets": {
       "type": "relation",
-      "relation": "manyToMany",
-      "target": "api::raffle.raffle",
-      "inversedBy": "invoices"
+      "relation": "oneToMany",
+      "target": "api::ticket.ticket",
+      "mappedBy": "invoiceId"
     }
   }
 }

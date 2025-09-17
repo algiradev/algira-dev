@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Detalles de tu compra</title>
+  </head>
+  <body
+    style="
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f6f6f6;
+    "
+  >
+    <table
+      role="presentation"
+      border="0"
+      cellpadding="0"
+      cellspacing="0"
+      width="100%"
+    >
+      <tr>
+        <td align="center" style="padding: 0 0; background-color: #00897d">
+          <img
+            src="https://res.cloudinary.com/dmit9qci3/image/upload/v1758131469/algira_kea3mf.png"
+            alt="Algira"
+            width="120"
+            height="120"
+            style="display: block; margin: auto"
+          />
+        </td>
+      </tr>
+
+      <tr>
+        <td align="center" style="padding: 20px">
+          <table
+            role="presentation"
+            border="0"
+            cellpadding="0"
+            cellspacing="0"
+            width="600"
+            style="
+              background: #ffffff;
+              border-radius: 8px;
+              overflow: hidden;
+              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            "
+          >
+            <tr>
+              <td
+                style="
+                  padding: 30px;
+                  text-align: left;
+                  color: #333333;
+                  font-size: 16px;
+                  line-height: 1.5;
+                "
+              >
+                <h2 style="color: #00897d; margin-top: 0">
+                  ¡Gracias por tu compra, {{userName}}!
+                </h2>
+                <p>
+                  Hemos recibido tu pago y aquí tienes un resumen de tu pedido:
+                </p>
+
+                <p style="font-size: 18px; font-weight: bold; margin: 20px 0">
+                  Código de factura: {{invoiceId}}
+                </p>
+
+                <p style="font-size: 18px; font-weight: bold; margin: 20px 0">
+                  Fecha de compra: {{transactionDate}}
+                </p>
+
+                <p style="font-size: 18px; font-weight: bold; margin: 20px 0">
+                  Monto total: ${{amount}}
+                </p>
+
+                <table
+                  border="0"
+                  cellpadding="10"
+                  cellspacing="0"
+                  width="100%"
+                  style="border-collapse: collapse; margin-bottom: 20px"
+                >
+                  <thead>
+                    <tr style="background-color: #00897d">
+                      <th align="left" style="color: #ffffff">Rifa</th>
+                      <th align="center" style="color: #ffffff">Precio</th>
+                      <th align="center" style="color: #ffffff">Tickets</th>
+                      <th align="center" style="color: #ffffff">
+                        Fecha de sorteo
+                      </th>
+                      <th align="right" style="color: #ffffff">Total</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {{rafflesRows}}
+                  </tbody>
+                </table>
+
+                <p style="margin-top: 30px">
+                  ¡Disfruta tu rifa y mucha suerte!
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+
+      <tr>
+        <td
+          align="center"
+          style="
+            padding: 20px;
+            background-color: #00897d;
+            color: #ffffff;
+            font-size: 14px;
+          "
+        >
+          <p style="margin: 0">
+            &copy; {{year}} Algira. Todos los derechos reservados.
+          </p>
+          <p style="margin: 5px 0">
+            Este es un correo automático, por favor no respondas.
+          </p>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

@@ -2,6 +2,8 @@ import type { Context } from "koa";
 import gateway from "../../../extensions/braintree";
 import email from "../../auth/services/email";
 
+import { formatDateToLocal } from "../../../utils/dateFormatter";
+
 export default {
   // Genera clientToken
   async generateToken(ctx: Context) {
@@ -44,6 +46,8 @@ export default {
       }
 
       const transaction = result.transaction;
+      const transactionId = transaction.id;
+      const transactionDate = new Date(transaction.createdAt);
 
       const newInvoice = await strapi.entityService.create(
         "api::invoice.invoice",
@@ -51,57 +55,36 @@ export default {
           data: {
             total: amount,
             currency: "USD",
-            transactionId: transaction.id,
+            transactionId,
             transactionStatus: transaction.status,
-            transactionDate: new Date(transaction.createdAt),
+            transactionDate,
             users_algira: ctx.state.user?.id,
-            raffles: ctx.request.body.raffles,
           },
-          populate: ["raffles", "users_algira"],
+          populate: ["tickets", "users_algira"],
         }
       );
 
       const ticketsData = tickets.map((t) => ({
         code: `${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
         number: t.number,
-        raffleId: t.raffleId,
+        invoiceId: newInvoice.id,
+        raffle: t.raffleId,
       }));
 
-      const createdTickets = await strapi.db
-        .query("api::ticket.ticket")
-        .createMany({
-          data: ticketsData,
-        });
-
-      const createdTicketIds = createdTickets.ids;
-
-      for (const raffleId of raffles) {
-        const raffleRecord = await strapi.db
-          .query("api::raffle.raffle")
-          .findOne({
-            where: { id: raffleId },
-            populate: ["invoices", "tickets"],
-          });
-
-        const ticketIdsForRaffle = ticketsData
-          .map((t, index) => ({ ...t, id: createdTicketIds[index] }))
-          .filter((t) => t.raffleId === raffleId)
-          .map((t) => t.id);
-
-        await strapi.db.query("api::raffle.raffle").update({
-          where: { id: raffleId },
-          data: {
-            invoices: [
-              ...raffleRecord.invoices.map((i) => i.id),
-              newInvoice.id,
-            ],
-            tickets: [
-              ...raffleRecord.tickets.map((t) => t.id),
-              ...ticketIdsForRaffle,
-            ],
-          },
-        });
-      }
+      // Crear cada ticket con entityService para mantener relaciones
+      const createdTickets = await Promise.all(
+        ticketsData.map((ticket) =>
+          strapi.entityService.create("api::ticket.ticket", {
+            data: {
+              code: ticket.code,
+              number: ticket.number,
+              raffle: ticket.raffle,
+              invoiceId: ticket.invoiceId,
+            },
+            populate: ["raffle", "invoiceId"],
+          })
+        )
+      );
 
       // Después de crear la invoice y los tickets
       // Después de crear la invoice y los tickets
@@ -111,8 +94,8 @@ export default {
       // Agrupar tickets por raffle
       const ticketsByRaffle: Record<number, number[]> = {};
       ticketsData.forEach((t) => {
-        if (!ticketsByRaffle[t.raffleId]) ticketsByRaffle[t.raffleId] = [];
-        ticketsByRaffle[t.raffleId].push(t.number);
+        if (!ticketsByRaffle[t.raffle]) ticketsByRaffle[t.raffle] = [];
+        ticketsByRaffle[t.raffle].push(t.number);
       });
 
       // Traer títulos de las rifas
@@ -120,28 +103,45 @@ export default {
         .query("api::raffle.raffle")
         .findMany({
           where: { id: { $in: raffles } },
-          select: ["id", "title"], // o "title" si tu campo se llama así
+          select: ["id", "title", "price", "endDate"],
         });
 
       // Construir el HTML del correo
-      let rafflesHtml = "";
+      let rafflesRows = "";
       for (const raffle of rafflesRecords) {
-        const numbers = ticketsByRaffle[raffle.id]?.join(", ") ?? "";
-        rafflesHtml += `<p>Rifa: "${raffle.title}"<br>Tickets: ${numbers}</p>`;
+        const numbers = ticketsByRaffle[raffle.id] ?? [];
+        const qty = numbers.length;
+        const subtotal = raffle.price * qty;
+        const endDate = formatDateToLocal(raffle.endDate);
+
+        rafflesRows += `
+    <tr>
+      <td>${raffle.title}</td>
+      <td align="center">$${raffle.price.toFixed(2)}</td>
+      <td align="center">${numbers.join(", ")}</td>
+      <td align="center">${endDate}</td>
+      <td align="right">$${subtotal.toFixed(2)}</td>
+    </tr>
+  `;
       }
 
-      const subject = "Detalles de tu compra en Algira";
-      const html = `
-        <p>Hola ${userName},</p>
-        <p>Gracias por tu compra! Aquí tienes los detalles:</p>
-        <p>Monto: $${amount.toFixed(2)}</p>
-        ${rafflesHtml}
-        <p>¡Disfruta tu rifa!</p>
-      `;
+      const subject = "Factura de compra";
 
       // Enviar el correo
-      await email.sendEmail({ to: userEmail, subject, html });
-      console.log("Correo enviado a", userEmail);
+      // Generar el HTML y enviar correo usando el servicio
+      await email.sendEmail({
+        to: userEmail,
+        subject,
+        templateName: "purchase-confirmation.html",
+        replacements: {
+          userName,
+          amount: amount.toFixed(2),
+          invoiceId: transaction.id,
+          transactionDate: formatDateToLocal(transaction.createdAt),
+          rafflesRows,
+          year: new Date().getFullYear().toString(),
+        },
+      });
 
       ctx.send({
         success: true,

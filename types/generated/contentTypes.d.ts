@@ -474,7 +474,7 @@ export interface ApiInvoiceInvoice extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
-    raffles: Schema.Attribute.Relation<'manyToMany', 'api::raffle.raffle'>;
+    tickets: Schema.Attribute.Relation<'oneToMany', 'api::ticket.ticket'>;
     total: Schema.Attribute.Decimal;
     transactionDate: Schema.Attribute.DateTime;
     transactionId: Schema.Attribute.String &
@@ -600,7 +600,6 @@ export interface ApiRaffleRaffle extends Struct.CollectionTypeSchema {
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     endDate: Schema.Attribute.DateTime;
-    invoices: Schema.Attribute.Relation<'manyToMany', 'api::invoice.invoice'>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -686,6 +685,7 @@ export interface ApiTicketTicket extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    invoiceId: Schema.Attribute.Relation<'manyToOne', 'api::invoice.invoice'>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -694,7 +694,7 @@ export interface ApiTicketTicket extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     number: Schema.Attribute.Integer;
     publishedAt: Schema.Attribute.DateTime;
-    raffleId: Schema.Attribute.Relation<'manyToOne', 'api::raffle.raffle'>;
+    raffle: Schema.Attribute.Relation<'manyToOne', 'api::raffle.raffle'>;
     status_ticket: Schema.Attribute.String &
       Schema.Attribute.SetMinMaxLength<{
         maxLength: 1;
