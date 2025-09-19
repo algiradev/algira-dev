@@ -33,6 +33,9 @@
     "minQuantity": {
       "type": "integer"
     },
+    "availableAmount": {
+      "type": "integer"
+    },
     "winnerTicket": {
       "type": "string",
       "maxLength": 45
