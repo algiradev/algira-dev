@@ -596,6 +596,7 @@ export interface ApiRaffleRaffle extends Struct.CollectionTypeSchema {
     draftAndPublish: false;
   };
   attributes: {
+    availableAmount: Schema.Attribute.Integer;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;

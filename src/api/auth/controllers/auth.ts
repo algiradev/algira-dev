@@ -78,7 +78,6 @@ export default {
             phoneNumber,
             zipCode,
             address,
-            avatar,
             city,
             businessId,
             countryId,
@@ -94,7 +93,12 @@ export default {
       await strapi.service("api::auth.email").sendEmail({
         to: email,
         subject: "Confirmar tu cuenta",
-        html: `<p>Confirma tu cuenta aquí: <a href="${frontendUrl}/confirm-email/${tokenEmail}">Confirmar</a></p>`,
+        templateName: "confirm-email.html",
+        replacements: {
+          link: `${frontendUrl}/confirm-email/${tokenEmail}`,
+          firstName,
+          year: new Date().getFullYear().toString(),
+        },
       });
 
       ctx.body = {

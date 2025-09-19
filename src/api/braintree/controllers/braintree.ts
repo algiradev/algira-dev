@@ -3,6 +3,7 @@ import gateway from "../../../extensions/braintree";
 import email from "../../auth/services/email";
 
 import { formatDateToLocal } from "../../../utils/dateFormatter";
+import { emitRaffleUpdate } from "../../../../config/socket";
 
 export default {
   // Genera clientToken
@@ -103,8 +104,52 @@ export default {
         .query("api::raffle.raffle")
         .findMany({
           where: { id: { $in: raffles } },
-          select: ["id", "title", "price", "endDate"],
+          select: [
+            "id",
+            "title",
+            "price",
+            "endDate",
+            "maxQuantity",
+            "availableAmount",
+          ],
         });
+
+      //Calcular cuántos tickets quedan disponibles y actualizar availableAmount
+      for (const raffle of rafflesRecords) {
+        const raffleId = raffle.id;
+
+        // contar todos los tickets vendidos de esta rifa
+        const ticketsCount = await strapi.db
+          .query("api::ticket.ticket")
+          .count({ where: { raffle: raffleId } });
+
+        const newAvailable = Math.max(
+          (raffle.maxQuantity ?? 0) - ticketsCount,
+          0
+        );
+
+        await strapi.db.query("api::raffle.raffle").update({
+          where: { id: raffleId },
+          data: { availableAmount: newAvailable },
+        });
+
+        // 📢 Emitir evento a los clientes
+        // Incluir los números de tickets comprados y el id del usuario que compró
+        const ticketsNumbers = ticketsData
+          .filter((t) => t.raffle === raffleId)
+          .map((t) => t.number);
+
+        emitRaffleUpdate(
+          raffleId,
+          newAvailable,
+          ticketsNumbers,
+          ctx.state.user?.id
+        );
+
+        strapi.log.info(
+          `📢 raffle:update -> raffleId=${raffleId}, availableAmount=${newAvailable}`
+        );
+      }
 
       // Construir el HTML del correo
       let rafflesRows = "";
