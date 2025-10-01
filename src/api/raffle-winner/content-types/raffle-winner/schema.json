@@ -1,0 +1,36 @@
+{
+  "kind": "collectionType",
+  "collectionName": "raffle_winners",
+  "info": {
+    "singularName": "raffle-winner",
+    "pluralName": "raffle-winners",
+    "displayName": "RaffleWinner"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "user_name": {
+      "type": "string"
+    },
+    "user_email": {
+      "type": "string"
+    },
+    "won_at": {
+      "type": "datetime"
+    },
+    "raffle": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::raffle.raffle",
+      "inversedBy": "raffle_winners"
+    },
+    "ticket": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::ticket.ticket",
+      "inversedBy": "raffle_winners"
+    }
+  }
+}
