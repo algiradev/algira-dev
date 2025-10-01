@@ -57,6 +57,16 @@
       "relation": "manyToOne",
       "target": "api::product.product",
       "inversedBy": "raffles"
+    },
+    "isDrawn": {
+      "type": "boolean",
+      "default": false
+    },
+    "raffle_winners": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::raffle-winner.raffle-winner",
+      "mappedBy": "raffle"
     }
   }
 }

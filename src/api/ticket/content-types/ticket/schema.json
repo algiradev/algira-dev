@@ -34,6 +34,12 @@
       "relation": "manyToOne",
       "target": "api::invoice.invoice",
       "inversedBy": "tickets"
+    },
+    "raffle_winners": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::raffle-winner.raffle-winner",
+      "mappedBy": "ticket"
     }
   }
 }

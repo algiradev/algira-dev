@@ -619,6 +619,39 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiRaffleWinnerRaffleWinner
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'raffle_winners';
+  info: {
+    displayName: 'RaffleWinner';
+    pluralName: 'raffle-winners';
+    singularName: 'raffle-winner';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::raffle-winner.raffle-winner'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    raffle: Schema.Attribute.Relation<'manyToOne', 'api::raffle.raffle'>;
+    ticket: Schema.Attribute.Relation<'manyToOne', 'api::ticket.ticket'>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    user_email: Schema.Attribute.String;
+    user_name: Schema.Attribute.String;
+    won_at: Schema.Attribute.DateTime;
+  };
+}
+
 export interface ApiRaffleRaffle extends Struct.CollectionTypeSchema {
   collectionName: 'raffles';
   info: {
@@ -637,6 +670,7 @@ export interface ApiRaffleRaffle extends Struct.CollectionTypeSchema {
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     endDate: Schema.Attribute.DateTime;
+    isDrawn: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -648,6 +682,10 @@ export interface ApiRaffleRaffle extends Struct.CollectionTypeSchema {
     price: Schema.Attribute.Decimal & Schema.Attribute.Required;
     product: Schema.Attribute.Relation<'manyToOne', 'api::product.product'>;
     publishedAt: Schema.Attribute.DateTime;
+    raffle_winners: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::raffle-winner.raffle-winner'
+    >;
     startDate: Schema.Attribute.DateTime;
     status_raffle: Schema.Attribute.String &
       Schema.Attribute.SetMinMaxLength<{
@@ -732,6 +770,10 @@ export interface ApiTicketTicket extends Struct.CollectionTypeSchema {
     number: Schema.Attribute.Integer;
     publishedAt: Schema.Attribute.DateTime;
     raffle: Schema.Attribute.Relation<'manyToOne', 'api::raffle.raffle'>;
+    raffle_winners: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::raffle-winner.raffle-winner'
+    >;
     status_ticket: Schema.Attribute.String &
       Schema.Attribute.SetMinMaxLength<{
         maxLength: 1;
@@ -1399,6 +1441,7 @@ declare module '@strapi/strapi' {
       'api::invoice.invoice': ApiInvoiceInvoice;
       'api::order.order': ApiOrderOrder;
       'api::product.product': ApiProductProduct;
+      'api::raffle-winner.raffle-winner': ApiRaffleWinnerRaffleWinner;
       'api::raffle.raffle': ApiRaffleRaffle;
       'api::rol.rol': ApiRolRol;
       'api::ticket.ticket': ApiTicketTicket;

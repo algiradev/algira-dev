@@ -31,3 +31,36 @@ export const emitRaffleUpdate = (
     });
   }
 };
+
+export const emitRaffleDraw = (payload: {
+  raffleId: number;
+  ticketNumber: number;
+  userName: string;
+  userEmail: string;
+}) => {
+  if (io) {
+    io.emit("raffle:draw", payload);
+  }
+};
+
+export const emitRaffleCountdown = (payload: {
+  raffleId: number;
+  title: string;
+  endDate: string;
+}) => {
+  if (io) {
+    io.emit("raffle:countdown", payload);
+  }
+};
+
+export const emitRaffleCreated = (payload: {
+  raffleId: number;
+  title: string;
+  description: string;
+  endDate: string;
+  availableAmount: number;
+}) => {
+  if (io) {
+    io.emit("raffle:created", payload);
+  }
+};
