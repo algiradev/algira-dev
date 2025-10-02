@@ -1,9 +1,6 @@
 import type { Context } from "koa";
 
 export default {
-  // ===============================
-  //  CREATE ORDER
-  // ===============================
   async create(ctx: Context) {
     const body = ctx.request.body;
 
@@ -16,8 +13,8 @@ export default {
           transactionDate: body.transactionDate,
           transactionStatus: body.transactionStatus,
           code: body.code,
-          users_algira: body.users_algira, // id del usuario
-          tickets: body.tickets, // array de ids de tickets si los hay
+          users_algira: body.users_algira,
+          tickets: body.tickets,
         },
       });
 
@@ -28,13 +25,10 @@ export default {
     }
   },
 
-  // ===============================
-  //  FIND ALL ORDERS
-  // ===============================
   async findAll(ctx: Context) {
     try {
       const orders = await strapi.entityService.findMany("api::order.order", {
-        filters: { publishedAt: { $notNull: true } }, // si quieres solo las publicadas
+        filters: { publishedAt: { $notNull: true } },
         populate: {
           users_algira: true,
           tickets: true,
@@ -48,9 +42,6 @@ export default {
     }
   },
 
-  // ===============================
-  //  FIND ONE ORDER
-  // ===============================
   async findOne(ctx: Context) {
     const { id } = ctx.params;
 
@@ -75,9 +66,6 @@ export default {
     }
   },
 
-  // ===============================
-  //  UPDATE ORDER
-  // ===============================
   async update(ctx: Context) {
     const { id } = ctx.params;
     const body = ctx.request.body;
@@ -107,9 +95,6 @@ export default {
     }
   },
 
-  // ===============================
-  //  DELETE ORDER
-  // ===============================
   async delete(ctx: Context) {
     const { id } = ctx.params;
 

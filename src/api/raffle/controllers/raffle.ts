@@ -3,20 +3,15 @@ import ticket from "../../ticket/controllers/ticket";
 import { emitRaffleCreated } from "../../../../config/socket";
 
 export default {
-  // ===============================
-  //  CREATE RAFFLE
-  // ===============================
   async create(ctx: Context) {
     const body = ctx.request.body;
 
     try {
       const raffle = await strapi.db.transaction(async (trx) => {
-        // Crear Post
         const post = await strapi.db.query("api::post.post").create({
           data: body.post,
         });
 
-        // Crear PostMultimedias si existen
         if (body.postsMultimedias?.length) {
           for (const image of body.postsMultimedias) {
             await strapi.db
@@ -27,7 +22,6 @@ export default {
           }
         }
 
-        // Crear Raffle vinculado al post
         const raffle = await strapi.db.query("api::raffle.raffle").create({
           data: { ...body, post: post.id },
         });
@@ -42,9 +36,6 @@ export default {
     }
   },
 
-  // ===============================
-  //  FIND ALL RAFFLES
-  // ===============================
   async findAll(ctx: Context) {
     try {
       const raffles = await strapi.db.query("api::raffle.raffle").findMany({
@@ -76,9 +67,6 @@ export default {
     }
   },
 
-  // ===============================
-  //  FIND ONE RAFFLE
-  // ===============================
   async findOne(ctx: Context) {
     const { id } = ctx.params;
 
@@ -120,16 +108,12 @@ export default {
     }
   },
 
-  // ===============================
-  //  UPDATE RAFFLE
-  // ===============================
   async update(ctx: Context) {
     const { id } = ctx.params;
     const body = ctx.request.body;
 
     try {
       const raffle = await strapi.db.transaction(async (trx) => {
-        // Actualizar Post
         if (body.post) {
           await strapi.db.query("api::post.post").update({
             where: { id: body.post.id },
@@ -137,7 +121,6 @@ export default {
           });
         }
 
-        // Eliminar imágenes si hay
         if (body.deletedImages?.length) {
           for (const idDeleted of body.deletedImages) {
             await strapi.db
@@ -148,7 +131,6 @@ export default {
           }
         }
 
-        // Actualizar o crear PostMultimedias
         if (body.postsMultimedias?.length) {
           for (const image of body.postsMultimedias) {
             if (!image.id) {
@@ -168,7 +150,6 @@ export default {
           }
         }
 
-        // Actualizar Raffle
         const raffle = await strapi.db.query("api::raffle.raffle").update({
           where: { id: parseInt(id, 10) },
           data: body,
@@ -184,9 +165,6 @@ export default {
     }
   },
 
-  // ===============================
-  //  DELETE RAFFLE
-  // ===============================
   async delete(ctx: Context) {
     const { id } = ctx.params;
 
@@ -199,12 +177,10 @@ export default {
 
         if (!raffle) throw new Error("Raffle no encontrado");
 
-        // Eliminar Raffle
         await strapi.db
           .query("api::raffle.raffle")
           .delete({ where: { id: raffle.id } });
 
-        // Eliminar Post asociado
         if (raffle.post?.id) {
           await strapi.db
             .query("api::post.post")

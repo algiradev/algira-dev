@@ -6,8 +6,8 @@ export default {
       const users = await strapi.db
         .query("api::users-algira.users-algira")
         .findMany({
-          where: { status_user: "a" }, // opcional, si manejas estado activo
-          populate: ["rolId", "countryId"], // relaciones que quieras traer
+          where: { status_user: "a" },
+          populate: ["rolId", "countryId"],
           orderBy: { createdAt: "desc" },
         });
 
@@ -38,7 +38,6 @@ export default {
       const { id } = ctx.params;
       const userId = parseInt(id, 10);
 
-      // Verificar que el usuario autenticado coincide con el ID solicitado
       const tokenUserId = ctx.state.user?.id;
       if (!tokenUserId) {
         return ctx.unauthorized("No estás autenticado");
@@ -61,7 +60,6 @@ export default {
         zipCode,
       } = ctx.request.body;
 
-      //   Verificar email duplicado
       const existingEmail = await strapi.db
         .query("api::users-algira.users-algira")
         .findOne({ where: { email, id: { $ne: userId } } });
@@ -72,7 +70,6 @@ export default {
         });
       }
 
-      // Verificar username duplicado
       const existingUsername = await strapi.db
         .query("api::users-algira.users-algira")
         .findOne({ where: { username, id: { $ne: userId } } });
@@ -83,7 +80,6 @@ export default {
         });
       }
 
-      // ✅ Actualizar usuario
       const updatedUser = await strapi.db
         .query("api::users-algira.users-algira")
         .update({

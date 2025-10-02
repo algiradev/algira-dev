@@ -373,6 +373,37 @@ export interface AdminUser extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiAboutUsAboutUs extends Struct.CollectionTypeSchema {
+  collectionName: 'about_uses';
+  info: {
+    displayName: 'AboutUs';
+    pluralName: 'about-uses';
+    singularName: 'about-us';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    img: Schema.Attribute.Media<'images' | 'files'> & Schema.Attribute.Required;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::about-us.about-us'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    shortText: Schema.Attribute.String;
+    text: Schema.Attribute.Text;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiBraintreeServiceBraintreeService
   extends Struct.CollectionTypeSchema {
   collectionName: 'braintree_services';
@@ -404,6 +435,52 @@ export interface ApiBraintreeServiceBraintreeService
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     userId: Schema.Attribute.Integer;
+  };
+}
+
+export interface ApiCommentComment extends Struct.CollectionTypeSchema {
+  collectionName: 'comments';
+  info: {
+    displayName: 'Comment';
+    pluralName: 'comments';
+    singularName: 'comment';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    comment: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 30;
+      }>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    img: Schema.Attribute.Media<'images' | 'files'>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::comment.comment'
+    > &
+      Schema.Attribute.Private;
+    name: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'usuario'>;
+    publishedAt: Schema.Attribute.DateTime;
+    rating: Schema.Attribute.Integer &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 5;
+          min: 1;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<5>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
   };
 }
 
@@ -742,6 +819,39 @@ export interface ApiRolRol extends Struct.CollectionTypeSchema {
       'oneToMany',
       'api::users-algira.users-algira'
     >;
+  };
+}
+
+export interface ApiSliderSlider extends Struct.CollectionTypeSchema {
+  collectionName: 'sliders';
+  info: {
+    displayName: 'Slider';
+    pluralName: 'sliders';
+    singularName: 'slider';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    alt: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'img'>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    img: Schema.Attribute.Media<'images' | 'files'> & Schema.Attribute.Required;
+    imgSmall: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::slider.slider'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
   };
 }
 
@@ -1435,7 +1545,9 @@ declare module '@strapi/strapi' {
       'admin::transfer-token': AdminTransferToken;
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
+      'api::about-us.about-us': ApiAboutUsAboutUs;
       'api::braintree-service.braintree-service': ApiBraintreeServiceBraintreeService;
+      'api::comment.comment': ApiCommentComment;
       'api::contact.contact': ApiContactContact;
       'api::country.country': ApiCountryCountry;
       'api::invoice.invoice': ApiInvoiceInvoice;
@@ -1444,6 +1556,7 @@ declare module '@strapi/strapi' {
       'api::raffle-winner.raffle-winner': ApiRaffleWinnerRaffleWinner;
       'api::raffle.raffle': ApiRaffleRaffle;
       'api::rol.rol': ApiRolRol;
+      'api::slider.slider': ApiSliderSlider;
       'api::ticket.ticket': ApiTicketTicket;
       'api::users-algira.users-algira': ApiUsersAlgiraUsersAlgira;
       'plugin::content-releases.release': PluginContentReleasesRelease;

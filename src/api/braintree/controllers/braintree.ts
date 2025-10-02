@@ -88,7 +88,6 @@ export default {
       );
 
       // Después de crear la invoice y los tickets
-      // Después de crear la invoice y los tickets
       const userEmail = ctx.state.user?.email;
       const userName = ctx.state.user?.username ?? "Usuario";
 
@@ -133,8 +132,6 @@ export default {
           data: { availableAmount: newAvailable },
         });
 
-        // 📢 Emitir evento a los clientes
-        // Incluir los números de tickets comprados y el id del usuario que compró
         const ticketsNumbers = ticketsData
           .filter((t) => t.raffle === raffleId)
           .map((t) => t.number);
@@ -151,7 +148,6 @@ export default {
         );
       }
 
-      // Construir el HTML del correo
       let rafflesRows = "";
       for (const raffle of rafflesRecords) {
         const numbers = ticketsByRaffle[raffle.id] ?? [];
@@ -172,8 +168,6 @@ export default {
 
       const subject = "Factura de compra";
 
-      // Enviar el correo
-      // Generar el HTML y enviar correo usando el servicio
       await email.sendEmail({
         to: userEmail,
         subject,
