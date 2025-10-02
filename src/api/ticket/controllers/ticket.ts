@@ -4,36 +4,30 @@ import type { Context } from "koa";
 export default {
   async getPurshasedTickets(ctx: Context) {
     try {
-      // Convertir raffleId a número
       const raffleId = parseInt(ctx.query.raffleId as string, 10);
 
       if (isNaN(raffleId)) {
         ctx.throw(400, "raffleId is required and must be a number");
       }
 
-      // Obtener tickets ocupados de la rifa
       const tickets = await strapi.db.query("api::ticket.ticket").findMany({
         where: { raffle: raffleId },
-        select: ["number"], // solo necesitamos el número
-        // populate: { raffle: { fields: ["title", "id"] } } // opcional
+        select: ["number"],
       });
 
-      // Enviar resultado
       ctx.send({ takenNumbers: tickets.map((t) => t.number) });
     } catch (err) {
       strapi.log.error("Error fetching tickets:", err);
       ctx.badRequest("No se pudo obtener los tickets");
     }
   },
-  // ===============================
-  //  FIND ALL TICKETS
-  // ===============================
+
   async findAll(ctx: Context) {
     try {
       const tickets = await strapi.db.query("api::ticket.ticket").findMany({
         where: { status_ticket: "a" },
         populate: {
-          raffle: true, // Opcional, si quieres traer la info del raffle
+          raffle: true,
         },
       });
 
@@ -44,9 +38,6 @@ export default {
     }
   },
 
-  // ===============================
-  //  FIND ONE TICKET
-  // ===============================
   async findOne(ctx: Context) {
     const { id } = ctx.params;
 
@@ -67,9 +58,6 @@ export default {
     }
   },
 
-  // ===============================
-  //  FIND TICKETS BY RAFFLE
-  // ===============================
   async findByRaffle(ctx: Context) {
     const { raffle } = ctx.params;
 
@@ -91,9 +79,6 @@ export default {
     }
   },
 
-  // ===============================
-  //  DELETE ALL TICKETS
-  // ===============================
   async deleteAll(ctx: Context) {
     try {
       const deleted = await strapi.db.query("api::ticket.ticket").deleteMany({

@@ -3,9 +3,6 @@ import { factories } from "@strapi/strapi";
 export default factories.createCoreController(
   "api::product.product",
   ({ strapi }) => ({
-    // ===============================
-    //  GET /products/list-table
-    // ===============================
     async listTable(ctx) {
       try {
         const products = await strapi.db
@@ -16,7 +13,7 @@ export default factories.createCoreController(
             populate: {
               image: true,
               raffles: {
-                select: ["id", "title"], // asumiendo que raffle tiene title
+                select: ["id", "title"],
               },
             },
           });
@@ -27,9 +24,6 @@ export default factories.createCoreController(
       }
     },
 
-    // ===============================
-    //  POST /products/find-one-by-title
-    // ===============================
     async findOneByTitle(ctx) {
       try {
         const { title } = ctx.request.body;
@@ -56,9 +50,6 @@ export default factories.createCoreController(
       }
     },
 
-    // ===============================
-    //  PUT /products/:id
-    // ===============================
     async update(ctx) {
       const { id } = ctx.params;
       const body = ctx.request.body;
@@ -70,9 +61,9 @@ export default factories.createCoreController(
             title: body.title,
             description: body.description,
             shortDescription: body.shortDescription,
-            image: body.image, // id de media
+            image: body.image,
             status_product: body.status_product,
-            raffles: body.raffles, // array de ids
+            raffles: body.raffles,
           },
         });
 

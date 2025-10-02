@@ -7,9 +7,6 @@ const JWT_SECRET = process.env.JWT_SECRET || "my-secret-key";
 const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3000";
 
 export default {
-  // ===============================
-  //  SIGNUP
-  // ===============================
   async signup(ctx: Context) {
     try {
       const {
@@ -110,9 +107,6 @@ export default {
     }
   },
 
-  // ===============================
-  //  SIGNIN
-  // ===============================
   async signin(ctx: Context) {
     const { email, password } = ctx.request.body as {
       email: string;
@@ -173,10 +167,6 @@ export default {
       ctx.internalServerError(err);
     }
   },
-
-  // ===============================
-  //  CONFIRM EMAIL
-  // ===============================
 
   async confirmEmail(ctx: Context) {
     const { token } = ctx.params;
@@ -246,9 +236,6 @@ export default {
     }
   },
 
-  // ===============================
-  //  FORGOT PASSWORD
-  // ===============================
   async forgotPassword(ctx: Context) {
     const { email } = ctx.request.body as { email: string };
 
@@ -280,9 +267,6 @@ export default {
     }
   },
 
-  // ===============================
-  //  RESET PASSWORD
-  // ===============================
   async resetPassword(ctx: Context) {
     const { token } = ctx.params;
     const { password } = ctx.request.body as { password: string };
@@ -306,15 +290,11 @@ export default {
     }
   },
 
-  // ===============================
-  //  UPDATE USER
-  // ===============================
   async updateUser(ctx: Context) {
     try {
       const { id } = ctx.params;
       const userId = parseInt(id, 10);
 
-      // Seguridad extra: validar que el token corresponda al mismo userId
       const tokenUserId = ctx.state.user?.id;
       if (tokenUserId !== userId) {
         return ctx.unauthorized(
@@ -333,43 +313,6 @@ export default {
         zipCode,
       } = ctx.request.body;
 
-      // Validación rápida
-      // if (
-      //   !firstName ||
-      //   !lastName ||
-      //   !username ||
-      //   !email ||
-      //   !countryId ||
-      //   !phoneNumber ||
-      //   !address ||
-      //   !zipCode
-      // ) {
-      //   return ctx.badRequest("Todos los campos son requeridos");
-      // }
-
-      // Verificar email duplicado
-      // const existingEmail = await strapi.db
-      //   .query("api::users-algira.users-algira")
-      //   .findOne({ where: { email, id: { $ne: userId } } });
-
-      // if (existingEmail) {
-      //   return ctx.badRequest("Este email ya está registrado", {
-      //     field: "email",
-      //   });
-      // }
-
-      // // Verificar username duplicado
-      // const existingUsername = await strapi.db
-      //   .query("api::users-algira.users-algira")
-      //   .findOne({ where: { username, id: { $ne: userId } } });
-
-      // if (existingUsername) {
-      //   return ctx.badRequest("Este username ya está registrado", {
-      //     field: "username",
-      //   });
-      // }
-
-      // ✅ Actualizar usuario
       const updatedUser = await strapi.db
         .query("api::users-algira.users-algira")
         .update({
@@ -410,9 +353,7 @@ export default {
       ctx.internalServerError(err);
     }
   },
-  // ===============================
-  //  UPDATE AVATAR
-  // ===============================
+
   async updateAvatar(ctx: Context) {
     try {
       const userId = ctx.state.user?.id;

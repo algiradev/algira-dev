@@ -5,9 +5,6 @@ export default {
     try {
       const now = new Date();
 
-      // -------------------------
-      // Rifas que empiezan en 1 minuto -> countdown
-      // -------------------------
       const oneMinuteLaterStart = new Date(now.getTime() + 60 * 1000);
       const startMinute = new Date(oneMinuteLaterStart);
       startMinute.setSeconds(0, 0);
@@ -24,7 +21,6 @@ export default {
         });
 
       for (const raffle of rafflesCountdown) {
-        // Iniciar conteo regresivo de 1 minuto (60s)
         let secondsLeft = 60;
         console.log(
           `⏱ Countdown iniciado para rifa ${raffle.id}: ${secondsLeft}s`
@@ -36,7 +32,6 @@ export default {
             clearInterval(interval);
             console.log(`🚨 Rifa ${raffle.id} listo para sorteo!`);
 
-            // Aquí ejecutamos el sorteo igual que en el cron normal
             (async () => {
               const raffleWithTickets = await strapi.db
                 .query("api::raffle.raffle")
@@ -112,7 +107,6 @@ export default {
           }
         }, 1000);
 
-        // Emitimos evento inicial de countdown para frontend
         emitRaffleCountdown({
           raffleId: raffle.id,
           title: raffle.title,

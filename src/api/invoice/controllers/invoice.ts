@@ -14,16 +14,16 @@ export default {
         {
           filters: {
             users_algira: {
-              id: userId, // filtra por el username del usuario
+              id: userId,
             },
           },
           populate: {
             tickets: {
               populate: ["raffle"],
             },
-            users_algira: true, // traer datos del usuario
+            users_algira: true,
           },
-          sort: { transactionDate: "desc" }, // opcional, las más recientes primero
+          sort: { transactionDate: "desc" },
         }
       );
 

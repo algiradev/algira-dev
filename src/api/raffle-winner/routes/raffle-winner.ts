@@ -1,7 +1,10 @@
-/**
- * raffle-winner router
- */
-
-import { factories } from '@strapi/strapi';
-
-export default factories.createCoreRouter('api::raffle-winner.raffle-winner');
+export default {
+  routes: [
+    {
+      method: "GET",
+      path: "/raffle-results",
+      handler: "raffle-winner.getResults",
+      config: { auth: false },
+    },
+  ],
+};

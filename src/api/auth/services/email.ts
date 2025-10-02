@@ -23,7 +23,7 @@ export default {
   }: {
     to: string;
     subject: string;
-    templateName: string; // ej: "purchase-confirmation.html"
+    templateName: string;
     replacements?: Record<string, string | number>;
   }) => {
     const templatePath = path.join(

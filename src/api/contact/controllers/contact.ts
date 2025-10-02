@@ -8,7 +8,7 @@ export default {
       let image;
 
       if (ctx.request.files?.image) {
-        image = ctx.request.files.image; // Strapi recibe los archivos en ctx.request.files
+        image = ctx.request.files.image;
       }
 
       if (!message || message.trim() === "") {
