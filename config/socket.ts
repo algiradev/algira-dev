@@ -37,6 +37,8 @@ export const emitRaffleDraw = (payload: {
   ticketNumber: number;
   userName: string;
   userEmail: string;
+  noTickets?: boolean;
+  message?: string;
 }) => {
   if (io) {
     io.emit("raffle:draw", payload);

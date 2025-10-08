@@ -24,15 +24,26 @@ export default factories.createCoreController(
         });
 
         if (!raffle) return ctx.notFound("Rifa no encontrada o ya sorteada");
-        if (!raffle.tickets || raffle.tickets.length === 0)
-          return ctx.badRequest("No hay tickets comprados");
+        if (!raffle.tickets) {
+          emitRaffleDraw({
+            raffleId: raffle.id,
+            ticketNumber: 0,
+            userName:
+              "No se realizará el sorteo porque no se vendieron tickets",
+            userEmail: "",
+            noTickets: true,
+          });
+          return;
+        }
 
         const crypto = await import("crypto");
-        const idx = crypto.randomInt(0, raffle.tickets.length);
-        const winnerTicket = raffle.tickets[idx];
+        const randomNumber = crypto.randomInt(1, raffle.maxQuantity + 1);
+        const winnerTicket = raffle.tickets.find(
+          (t) => t.number === randomNumber
+        );
         const userName = winnerTicket.invoiceId?.users_algira
-          ? `${winnerTicket.invoiceId.users_algira.firstName} ${winnerTicket.invoiceId.users_algira.lastName}`
-          : "Desconocido";
+          ? `${winnerTicket.invoiceId.users_algira.username}`
+          : "No hubo ganador";
 
         const userEmail = winnerTicket.invoiceId?.users_algira?.email ?? "";
 
@@ -41,7 +52,7 @@ export default factories.createCoreController(
           .create({
             data: {
               raffle: raffle.id,
-              ticket: winnerTicket.id,
+              ticket: randomNumber,
               user_name: userName,
               user_email: userEmail,
               won_at: new Date(),
@@ -62,7 +73,7 @@ export default factories.createCoreController(
 
         const payload = {
           raffleId: raffle.id,
-          ticketNumber: winnerTicket.number,
+          ticketNumber: randomNumber,
           userName: userName,
           userEmail: userEmail,
         };
@@ -75,7 +86,7 @@ export default factories.createCoreController(
             id: winnerFull.id,
             user_name: winnerFull.user_name,
             user_email: winnerFull.user_email,
-            ticketNumber: winnerFull.ticket?.number ?? null,
+            ticketNumber: randomNumber ?? null,
             won_at: winnerFull.won_at,
           },
         });

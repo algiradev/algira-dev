@@ -689,7 +689,11 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
         maxLength: 1;
       }> &
       Schema.Attribute.DefaultTo<'a'>;
-    title: Schema.Attribute.String & Schema.Attribute.Required;
+    title: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 23;
+      }>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -771,7 +775,11 @@ export interface ApiRaffleRaffle extends Struct.CollectionTypeSchema {
       }> &
       Schema.Attribute.DefaultTo<'a'>;
     tickets: Schema.Attribute.Relation<'oneToMany', 'api::ticket.ticket'>;
-    title: Schema.Attribute.String & Schema.Attribute.Required;
+    title: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 23;
+      }>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -911,10 +919,7 @@ export interface ApiUsersAlgiraUsersAlgira extends Struct.CollectionTypeSchema {
       Schema.Attribute.SetMinMaxLength<{
         maxLength: 60;
       }>;
-    avatar: Schema.Attribute.String &
-      Schema.Attribute.SetMinMaxLength<{
-        maxLength: 100;
-      }>;
+    avatar: Schema.Attribute.Media<'images' | 'files'>;
     businessId: Schema.Attribute.Integer;
     city: Schema.Attribute.String &
       Schema.Attribute.SetMinMaxLength<{

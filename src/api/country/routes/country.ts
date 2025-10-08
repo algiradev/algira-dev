@@ -1,7 +1,12 @@
-/**
- * country router
- */
-
-import { factories } from '@strapi/strapi';
-
-export default factories.createCoreRouter('api::country.country');
+export default {
+  routes: [
+    {
+      method: "GET",
+      path: "/countries/all",
+      handler: "country.findAll",
+      config: {
+        auth: false,
+      },
+    },
+  ],
+};

@@ -3,7 +3,6 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 
-const JWT_SECRET = process.env.JWT_SECRET || "my-secret-key";
 const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3000";
 
 export default {
@@ -118,7 +117,7 @@ export default {
         .query("api::users-algira.users-algira")
         .findOne({
           where: { $or: [{ email }, { username: email }] },
-          populate: ["rolId", "countryId"],
+          populate: ["rolId", "countryId", "avatar"],
         });
       if (!user) return ctx.badRequest("Usuario no encontrado");
       if (!user.confirmEmail)
@@ -255,7 +254,12 @@ export default {
       await strapi.service("api::auth.email").sendEmail({
         to: email,
         subject: "Restablecer contraseña",
-        html: `<p>Restablece tu contraseña aquí: <a href="${frontendUrl}/reset-password/${tokenEmail}">Restablecer</a></p>`,
+        templateName: "reset-password.html",
+        replacements: {
+          link: `${frontendUrl}/reset-password/${tokenEmail}`,
+          firstName: user.username || "Usuario",
+          year: new Date().getFullYear().toString(),
+        },
       });
 
       ctx.body = {
@@ -385,7 +389,7 @@ export default {
 
       const updatedUser = await strapi.db
         .query("api::users-algira.users-algira")
-        .findOne({ where: { id: userId }, populate: ["rolId"] });
+        .findOne({ where: { id: userId }, populate: ["rolId", "avatar"] });
 
       ctx.body = {
         message: "Imagen de perfil actualizada correctamente",
@@ -398,7 +402,7 @@ export default {
           phoneNumber: updatedUser.phoneNumber,
           zipCode: updatedUser.zipCode,
           address: updatedUser.address,
-          avatar: uploadedFiles[0].url,
+          avatar: updatedUser.avatar,
           city: updatedUser.city,
           businessId: updatedUser.businessId,
           countryId: updatedUser.countryId,

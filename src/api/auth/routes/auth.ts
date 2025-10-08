@@ -1,3 +1,5 @@
+import authJwt from "../../../middlewares/auth-jwt";
+
 export default {
   routes: [
     {
@@ -35,7 +37,7 @@ export default {
       method: "POST",
       path: "/auth/update-avatar",
       handler: "auth.updateAvatar",
-      config: { auth: { scope: ["authenticated"] } },
+      config: { middlewares: [authJwt], auth: false },
     },
   ],
 };
