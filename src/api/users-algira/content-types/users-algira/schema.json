@@ -50,10 +50,6 @@
       "type": "string",
       "maxLength": 60
     },
-    "avatar": {
-      "type": "string",
-      "maxLength": 100
-    },
     "token": {
       "type": "string",
       "maxLength": 250
@@ -103,6 +99,14 @@
       "relation": "oneToMany",
       "target": "api::invoice.invoice",
       "mappedBy": "users_algira"
+    },
+    "avatar": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "files"
+      ]
     }
   }
 }

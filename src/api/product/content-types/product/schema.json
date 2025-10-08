@@ -13,6 +13,7 @@
   "attributes": {
     "title": {
       "type": "string",
+      "maxLength": 23,
       "required": true
     },
     "description": {
