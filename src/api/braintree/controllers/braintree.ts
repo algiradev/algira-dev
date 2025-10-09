@@ -1,9 +1,25 @@
 import type { Context } from "koa";
 import gateway from "../../../extensions/braintree";
 import email from "../../auth/services/email";
+import path from "path";
+import fs from "fs";
+import puppeteer from "puppeteer";
 
 import { formatDateToLocal } from "../../../utils/dateFormatter";
 import { emitRaffleUpdate } from "../../../../config/socket";
+
+const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3000";
+
+function formatDateForFilename(date: Date) {
+  const pad = (n: number) => n.toString().padStart(2, "0");
+  return (
+    pad(date.getDate()) +
+    pad(date.getMonth() + 1) +
+    date.getFullYear() +
+    pad(date.getHours()) +
+    pad(date.getMinutes())
+  ); // ddmmyyyyhhmm
+}
 
 export default {
   // Genera clientToken
@@ -17,10 +33,11 @@ export default {
     }
   },
 
+  // ./src/api/payment/controllers/payment.ts (o .js según tu setup)
+
   async processPayment(ctx: Context) {
     try {
       const body = ctx.request.body;
-
       if (!body || Object.keys(body).length === 0) {
         ctx.throw(400, "Request body is empty");
       }
@@ -35,6 +52,7 @@ export default {
       if (!paymentMethodNonce) ctx.throw(400, "paymentMethodNonce is required");
       if (!amount || amount <= 0) ctx.throw(400, "Valid amount is required");
 
+      // 🔹 Procesar pago con Braintree
       const result = await gateway.transaction.sale({
         amount: amount.toFixed(2),
         paymentMethodNonce,
@@ -47,24 +65,24 @@ export default {
       }
 
       const transaction = result.transaction;
-      const transactionId = transaction.id;
-      const transactionDate = new Date(transaction.createdAt);
 
+      // 🔹 Crear factura
       const newInvoice = await strapi.entityService.create(
         "api::invoice.invoice",
         {
           data: {
             total: amount,
             currency: "USD",
-            transactionId,
+            transactionId: transaction.id,
             transactionStatus: transaction.status,
-            transactionDate,
+            transactionDate: new Date(transaction.createdAt),
             users_algira: ctx.state.user?.id,
           },
           populate: ["tickets", "users_algira"],
         }
       );
 
+      // 🔹 Crear tickets asociados
       const ticketsData = tickets.map((t) => ({
         code: `${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
         number: t.number,
@@ -72,8 +90,7 @@ export default {
         raffle: t.raffleId,
       }));
 
-      // Crear cada ticket con entityService para mantener relaciones
-      const createdTickets = await Promise.all(
+      await Promise.all(
         ticketsData.map((ticket) =>
           strapi.entityService.create("api::ticket.ticket", {
             data: {
@@ -87,18 +104,17 @@ export default {
         )
       );
 
-      // Después de crear la invoice y los tickets
       const userEmail = ctx.state.user?.email;
       const userName = ctx.state.user?.username ?? "Usuario";
 
-      // Agrupar tickets por raffle
+      // 🔹 Agrupar tickets por rifa
       const ticketsByRaffle: Record<number, number[]> = {};
       ticketsData.forEach((t) => {
         if (!ticketsByRaffle[t.raffle]) ticketsByRaffle[t.raffle] = [];
         ticketsByRaffle[t.raffle].push(t.number);
       });
 
-      // Traer títulos de las rifas
+      // 🔹 Obtener rifas
       const rafflesRecords = await strapi.db
         .query("api::raffle.raffle")
         .findMany({
@@ -113,14 +129,11 @@ export default {
           ],
         });
 
-      //Calcular cuántos tickets quedan disponibles y actualizar availableAmount
+      // 🔹 Actualizar cantidad disponible
       for (const raffle of rafflesRecords) {
-        const raffleId = raffle.id;
-
-        // contar todos los tickets vendidos de esta rifa
         const ticketsCount = await strapi.db
           .query("api::ticket.ticket")
-          .count({ where: { raffle: raffleId } });
+          .count({ where: { raffle: raffle.id } });
 
         const newAvailable = Math.max(
           (raffle.maxQuantity ?? 0) - ticketsCount,
@@ -128,26 +141,27 @@ export default {
         );
 
         await strapi.db.query("api::raffle.raffle").update({
-          where: { id: raffleId },
+          where: { id: raffle.id },
           data: { availableAmount: newAvailable },
         });
 
         const ticketsNumbers = ticketsData
-          .filter((t) => t.raffle === raffleId)
+          .filter((t) => t.raffle === raffle.id)
           .map((t) => t.number);
 
         emitRaffleUpdate(
-          raffleId,
+          raffle.id,
           newAvailable,
           ticketsNumbers,
           ctx.state.user?.id
         );
 
         strapi.log.info(
-          `📢 raffle:update -> raffleId=${raffleId}, availableAmount=${newAvailable}`
+          `📢 raffle:update -> raffleId=${raffle.id}, availableAmount=${newAvailable}`
         );
       }
 
+      // 🔹 Crear filas HTML para la tabla
       let rafflesRows = "";
       for (const raffle of rafflesRecords) {
         const numbers = ticketsByRaffle[raffle.id] ?? [];
@@ -156,21 +170,64 @@ export default {
         const endDate = formatDateToLocal(raffle.endDate);
 
         rafflesRows += `
-    <tr>
-      <td>${raffle.title}</td>
-      <td align="center">$${raffle.price.toFixed(2)}</td>
-      <td align="center">${numbers.join(", ")}</td>
-      <td align="center">${endDate}</td>
-      <td align="right">$${subtotal.toFixed(2)}</td>
-    </tr>
-  `;
+        <tr>
+          <td>${raffle.title}</td>
+          <td align="center">$${raffle.price.toFixed(2)}</td>
+          <td align="center">${numbers.join(", ")}</td>
+          <td align="center">${endDate}</td>
+          <td align="right">$${subtotal.toFixed(2)}</td>
+        </tr>`;
       }
 
-      const subject = "Factura de compra";
+      // ===============================
+      // 🔹 Generar PDF del Invoice
+      // ===============================
+      const invoicesDir = path.join(strapi.dirs.static.public, "invoices");
+      if (!fs.existsSync(invoicesDir))
+        fs.mkdirSync(invoicesDir, { recursive: true });
 
+      const timestamp = formatDateForFilename(new Date(transaction.createdAt));
+      const safeUsername = (userName || "usuario").replace(/\s+/g, "_");
+      const pdfFilename = `${transaction.id}${safeUsername}${timestamp}.pdf`;
+      const pdfPath = path.join(invoicesDir, pdfFilename);
+
+      const templateHtmlString = fs.readFileSync(
+        path.join(
+          strapi.dirs.app.root,
+          "public/email-templates/purchase-confirmation.html"
+        ),
+        "utf8"
+      );
+
+      let htmlContent = templateHtmlString
+        .replace(/{{userName}}/g, userName)
+        .replace(/{{amount}}/g, amount.toFixed(2))
+        .replace(/{{invoiceId}}/g, transaction.id)
+        .replace(
+          /{{transactionDate}}/g,
+          formatDateToLocal(transaction.createdAt)
+        )
+        .replace(/{{rafflesRows}}/g, rafflesRows)
+        .replace(/{{year}}/g, new Date().getFullYear().toString());
+
+      const browser = await puppeteer.launch({
+        headless: true,
+        args: ["--no-sandbox", "--disable-setuid-sandbox"],
+      });
+      const page = await browser.newPage();
+      await page.setContent(htmlContent, { waitUntil: "networkidle0" });
+      await page.pdf({
+        path: pdfPath,
+        format: "A4",
+        printBackground: true,
+        margin: { top: "20px", bottom: "20px", left: "20px", right: "20px" },
+      });
+      await browser.close();
+
+      // 🔹 Enviar correo con PDF adjunto
       await email.sendEmail({
         to: userEmail,
-        subject,
+        subject: "Factura de compra - Algira",
         templateName: "purchase-confirmation.html",
         replacements: {
           userName,
@@ -180,11 +237,19 @@ export default {
           rafflesRows,
           year: new Date().getFullYear().toString(),
         },
+        attachments: [
+          {
+            filename: pdfFilename,
+            path: pdfPath,
+          },
+        ],
       });
 
+      // ✅ Respuesta final
       ctx.send({
         success: true,
-        message: "Pago procesado, invoice y tickets creados correctamente",
+        message:
+          "Pago procesado, invoice, tickets y PDF generados correctamente",
         invoice: newInvoice,
       });
     } catch (error: any) {

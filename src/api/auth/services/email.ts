@@ -20,11 +20,13 @@ export default {
     subject,
     templateName,
     replacements,
+    attachments,
   }: {
     to: string;
     subject: string;
     templateName: string;
     replacements?: Record<string, string | number>;
+    attachments?: { filename: string; path: string }[];
   }) => {
     const templatePath = path.join(
       process.cwd(),
@@ -45,6 +47,7 @@ export default {
       to,
       subject,
       html,
+      attachments,
     });
   },
 };
