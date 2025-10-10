@@ -1,6 +1,5 @@
 import type { Context } from "koa";
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
 import crypto from "crypto";
 
 const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3000";
