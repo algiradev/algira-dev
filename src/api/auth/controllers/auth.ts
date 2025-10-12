@@ -1,6 +1,7 @@
 import type { Context } from "koa";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
+import emailService from "../services/email-service";
 
 const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3000";
 
@@ -85,7 +86,7 @@ export default {
       );
 
       // Enviar email de confirmación
-      await strapi.service("api::auth.email").sendEmail({
+      await emailService.sendEmail({
         to: email,
         subject: "Confirmar tu cuenta",
         templateName: "confirm-email.html",
@@ -250,7 +251,7 @@ export default {
         data: { tokenEmail },
       });
 
-      await strapi.service("api::auth.email").sendEmail({
+      await emailService.sendEmail({
         to: email,
         subject: "Restablecer contraseña",
         templateName: "reset-password.html",

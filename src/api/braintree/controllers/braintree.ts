@@ -1,12 +1,12 @@
 import type { Context } from "koa";
 import gateway from "../../../extensions/braintree";
-import email from "../../auth/services/email";
 import path from "path";
 import fs from "fs";
 import puppeteer from "puppeteer";
 
 import { formatDateToLocal } from "../../../utils/dateFormatter";
 import { emitRaffleUpdate } from "../../../../config/socket";
+import emailService from "../../auth/services/email-service";
 
 const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3000";
 
@@ -225,7 +225,7 @@ export default {
       await browser.close();
 
       // 🔹 Enviar correo con PDF adjunto
-      await email.sendEmail({
+      await emailService.sendEmail({
         to: userEmail,
         subject: "Factura de compra - Algira",
         templateName: "purchase-confirmation.html",
