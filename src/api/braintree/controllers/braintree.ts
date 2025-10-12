@@ -8,8 +8,6 @@ import { formatDateToLocal } from "../../../utils/dateFormatter";
 import { emitRaffleUpdate } from "../../../../config/socket";
 import emailService from "../../auth/services/email-service";
 
-const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3000";
-
 function formatDateForFilename(date: Date) {
   const pad = (n: number) => n.toString().padStart(2, "0");
   return (
