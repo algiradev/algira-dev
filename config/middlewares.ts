@@ -6,7 +6,7 @@ export default [
   {
     name: "strapi::cors",
     config: {
-      origin: ["https://algira-web.vercel.app"],
+      origin: ["https://algira-web.vercel.app", "http://localhost:3000"],
       headers: ["*"],
       credentials: true,
     },

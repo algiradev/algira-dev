@@ -1,4 +1,4 @@
-import email from "../src/api/auth/services/email";
+import emailService from "../src/api/auth/services/email-service";
 import { emitRaffleCountdown, emitRaffleDraw } from "./socket";
 
 const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3000";
@@ -105,7 +105,7 @@ export default {
               // 📧 Enviar correo al ganador (si tiene email)
               if (userEmail) {
                 try {
-                  await email.sendEmail({
+                  await emailService.sendEmail({
                     to: userEmail,
                     subject: "🎉 ¡Felicidades! Ganaste la rifa",
                     templateName: "winner-email.html",
