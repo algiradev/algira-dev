@@ -3,7 +3,7 @@ import sgMail from "@sendgrid/mail";
 import fs from "fs";
 import path from "path";
 
-sgMail.setApiKey(process.env.SENDGRID_API_KEY!); //  asegura que TS sepa que existe
+sgMail.setApiKey(process.env.SENDGRID_API_KEY!);
 
 interface EmailAttachment {
   filename: string;
@@ -54,7 +54,7 @@ export default {
       // 🧩 4️⃣ Construir mensaje
       const msg: any = {
         to,
-        from: "algira.dev@gmail.com", // debe estar verificado en SendGrid
+        from: "algira.dev@gmail.com",
         subject,
         html,
         attachments: sgAttachments,
