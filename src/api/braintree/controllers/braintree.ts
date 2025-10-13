@@ -35,6 +35,7 @@ export default {
 
   async processPayment(ctx: Context) {
     try {
+      let transaction;
       const body = ctx.request.body;
       if (!body || Object.keys(body).length === 0) {
         ctx.throw(400, "Request body is empty");
@@ -50,19 +51,29 @@ export default {
       if (!paymentMethodNonce) ctx.throw(400, "paymentMethodNonce is required");
       if (!amount || amount <= 0) ctx.throw(400, "Valid amount is required");
 
-      // 🔹 Procesar pago con Braintree
-      const result = await gateway.transaction.sale({
-        amount: amount.toFixed(2),
-        paymentMethodNonce,
-        options: { submitForSettlement: true },
-      });
+      try {
+        // 🔹 Procesar pago con Braintree
+        const result = await gateway.transaction.sale({
+          amount: amount.toFixed(2),
+          paymentMethodNonce,
+          options: { submitForSettlement: true },
+        });
 
-      if (!result.success) {
-        ctx.send({ success: false, error: result.message });
-        return;
+        if (!result.success) {
+          ctx.send({ success: false, error: result.message });
+          return;
+        }
+
+        transaction = result.transaction;
+      } catch (braintreeError: any) {
+        console.error("Braintree error:", braintreeError);
+        return ctx.throw(
+          400,
+          `Error procesando el pago: ${braintreeError.message || braintreeError}`
+        );
       }
 
-      const transaction = result.transaction;
+      // const transaction = result.transaction;
 
       // 🔹 Crear factura
       const newInvoice = await strapi.entityService.create(
