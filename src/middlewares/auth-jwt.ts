@@ -22,7 +22,11 @@ export default async (ctx: Context, next: Next) => {
   const token = parts[1];
 
   try {
-    const decoded = jwt.verify(token, JWT_SECRET);
+    const decoded = await strapi
+      .service("plugin::users-permissions.jwt")
+      .verify(token);
+    console.log("🛡 Middleware ejecutado. Authorization:", decoded);
+
     ctx.state.user = decoded;
     await next();
   } catch (err) {
