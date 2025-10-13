@@ -15,10 +15,12 @@
     "upgrade:dry": "npx @strapi/upgrade latest --dry"
   },
   "dependencies": {
+    "@sendgrid/mail": "^8.1.6",
     "@strapi/database": "^5.20.0",
     "@strapi/plugin-cloud": "5.20.0",
     "@strapi/plugin-users-permissions": "5.20.0",
     "@strapi/provider-email-nodemailer": "^5.21.0",
+    "@strapi/provider-email-sendgrid": "^5.27.0",
     "@strapi/strapi": "5.20.0",
     "@types/nodemailer": "^6.4.17",
     "bcryptjs": "^3.0.2",
@@ -33,6 +35,7 @@
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-router-dom": "^6.0.0",
+    "resend": "^6.1.2",
     "socket.io": "^4.8.1",
     "stripe": "^18.5.0",
     "styled-components": "^6.0.0"
