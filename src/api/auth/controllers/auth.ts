@@ -87,23 +87,24 @@ export default {
 
       // Enviar email de confirmación
       strapi.log.info("➡️ Intentando enviar correo a " + email);
-      const sendEmail = await emailService.sendEmail({
+
+      await emailService.sendEmail({
         to: email,
         subject: "Confirmar tu cuenta",
         templateName: "confirm-email.html",
         replacements: {
           link: `${frontendUrl}/confirm-email/${tokenEmail}`,
-          firstName,
+          username,
           year: new Date().getFullYear().toString(),
         },
       });
+
       strapi.log.info("✅ Correo enviado a " + email);
 
       ctx.body = {
         message: "Revisa tu correo electrónico para confirmar tu cuenta",
         tokenEmail,
       };
-      return sendEmail;
     } catch (err) {
       ctx.internalServerError(err);
     }
