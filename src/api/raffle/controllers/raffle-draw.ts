@@ -27,7 +27,7 @@ export default factories.createCoreController(
         if (!raffle.tickets) {
           emitRaffleDraw({
             raffleId: raffle.id,
-            ticketNumber: 0,
+            ticketNumber: "0",
             userName:
               "No se realizará el sorteo porque no se vendieron tickets",
             userEmail: "",
@@ -37,7 +37,9 @@ export default factories.createCoreController(
         }
 
         const crypto = await import("crypto");
-        const randomNumber = crypto.randomInt(1, raffle.maxQuantity + 1);
+        const randomNumber = String(
+          crypto.randomInt(1, raffle.maxQuantity + 1)
+        );
         const winnerTicket = raffle.tickets.find(
           (t) => t.number === randomNumber
         );

@@ -1,6 +1,4 @@
 import type { Context } from "koa";
-import ticket from "../../ticket/controllers/ticket";
-import { emitRaffleCreated } from "../../../../config/socket";
 
 export default {
   async create(ctx: Context) {

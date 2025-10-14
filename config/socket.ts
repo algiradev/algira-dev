@@ -19,7 +19,7 @@ export const initSocket = (server) => {
 export const emitRaffleUpdate = (
   raffleId,
   availableAmount,
-  ticketsBought: number[],
+  ticketsBought: string[],
   userId
 ) => {
   if (io) {
@@ -34,7 +34,7 @@ export const emitRaffleUpdate = (
 
 export const emitRaffleDraw = (payload: {
   raffleId: number;
-  ticketNumber: number;
+  ticketNumber: string;
   userName: string;
   userEmail: string;
   noTickets?: boolean;
