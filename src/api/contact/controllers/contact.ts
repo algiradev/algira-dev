@@ -3,45 +3,63 @@ import type { Context } from "koa";
 export default {
   async createContact(ctx: Context) {
     try {
-      const { subject, name, email, message, type } = ctx.request.body;
-
-      let image;
-
-      if (ctx.request.files?.image) {
-        image = ctx.request.files.image;
-      }
+      const { name, email, message, type } = ctx.request.body;
 
       if (!message || message.trim() === "") {
-        ctx.badRequest("El mensaje es obligatorio");
-        return;
+        return ctx.badRequest("El mensaje es obligatorio");
       }
-
       if (type === "contact" && (!email || !name)) {
-        ctx.badRequest("Nombre y correo son obligatorios para contacto");
-        return;
+        return ctx.badRequest("Nombre y correo son obligatorios para contacto");
       }
 
       const newContact = await strapi.entityService.create(
         "api::contact.contact",
         {
-          data: {
-            subject,
-            name,
-            email,
-            message,
-            type,
-          },
-          ...(image ? { files: { image } } : {}),
+          data: { name, email, message, type },
         }
       );
+
+      if (ctx.request.files?.image) {
+        const file = ctx.request.files.image;
+        const uploadedFiles = await strapi
+          .plugin("upload")
+          .service("upload")
+          .upload({
+            data: {
+              refId: newContact.id,
+              ref: "api::contact.contact",
+              field: "image",
+            },
+            files: file,
+          });
+
+        if (uploadedFiles && uploadedFiles.length > 0) {
+          await strapi.entityService.update(
+            "api::contact.contact",
+            newContact.id,
+            {
+              data: {
+                image: uploadedFiles[0].id,
+              },
+            }
+          );
+        }
+      }
+
+      const contactWithImage = await strapi.db
+        .query("api::contact.contact")
+        .findOne({
+          where: { id: newContact.id },
+          populate: ["image"],
+        });
 
       ctx.send({
         success: true,
         message: "Contacto/feedback registrado correctamente",
-        data: newContact,
+        data: contactWithImage,
       });
     } catch (err: any) {
-      strapi.log.error("Error posting contact:", err);
+      strapi.log.error("Error creando contacto:", err);
       ctx.badRequest(`Error creando contacto: ${err.message}`);
     }
   },

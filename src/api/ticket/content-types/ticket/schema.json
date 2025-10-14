@@ -18,12 +18,6 @@
     "code": {
       "type": "uid"
     },
-    "status_ticket": {
-      "type": "string",
-      "default": "a",
-      "minLength": 1,
-      "maxLength": 1
-    },
     "raffle": {
       "type": "relation",
       "relation": "manyToOne",
