@@ -4,18 +4,19 @@
   "info": {
     "singularName": "ticket",
     "pluralName": "tickets",
-    "displayName": "Ticket"
+    "displayName": "Ticket",
+    "mainField": "number"
   },
   "options": {
     "draftAndPublish": false
   },
   "pluginOptions": {},
   "attributes": {
+    "number": {
+      "type": "string"
+    },
     "code": {
       "type": "uid"
-    },
-    "number": {
-      "type": "integer"
     },
     "status_ticket": {
       "type": "string",

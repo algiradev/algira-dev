@@ -261,7 +261,7 @@ export default {
         templateName: "reset-password.html",
         replacements: {
           link: `${frontendUrl}/reset-password/${tokenEmail}`,
-          firstName: user.username || "Usuario",
+          username: user.username,
           year: new Date().getFullYear().toString(),
         },
       });

@@ -608,49 +608,6 @@ export interface ApiInvoiceInvoice extends Struct.CollectionTypeSchema {
   };
 }
 
-export interface ApiOrderOrder extends Struct.CollectionTypeSchema {
-  collectionName: 'orders';
-  info: {
-    displayName: 'Ordered';
-    pluralName: 'orders';
-    singularName: 'order';
-  };
-  options: {
-    draftAndPublish: false;
-  };
-  attributes: {
-    amount: Schema.Attribute.Decimal;
-    code: Schema.Attribute.UID;
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    currency: Schema.Attribute.String &
-      Schema.Attribute.SetMinMaxLength<{
-        maxLength: 45;
-      }>;
-    locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<'oneToMany', 'api::order.order'> &
-      Schema.Attribute.Private;
-    publishedAt: Schema.Attribute.DateTime;
-    transactionDate: Schema.Attribute.DateTime;
-    transactionId: Schema.Attribute.String &
-      Schema.Attribute.SetMinMaxLength<{
-        maxLength: 45;
-      }>;
-    transactionStatus: Schema.Attribute.String &
-      Schema.Attribute.SetMinMaxLength<{
-        maxLength: 250;
-      }>;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    users_algira: Schema.Attribute.Relation<
-      'manyToOne',
-      'api::users-algira.users-algira'
-    >;
-  };
-}
-
 export interface ApiProductProduct extends Struct.CollectionTypeSchema {
   collectionName: 'products';
   info: {
@@ -867,6 +824,7 @@ export interface ApiTicketTicket extends Struct.CollectionTypeSchema {
   collectionName: 'tickets';
   info: {
     displayName: 'Ticket';
+    mainField: 'number';
     pluralName: 'tickets';
     singularName: 'ticket';
   };
@@ -885,7 +843,7 @@ export interface ApiTicketTicket extends Struct.CollectionTypeSchema {
       'api::ticket.ticket'
     > &
       Schema.Attribute.Private;
-    number: Schema.Attribute.Integer;
+    number: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
     raffle: Schema.Attribute.Relation<'manyToOne', 'api::raffle.raffle'>;
     raffle_winners: Schema.Attribute.Relation<
@@ -920,11 +878,6 @@ export interface ApiUsersAlgiraUsersAlgira extends Struct.CollectionTypeSchema {
         maxLength: 60;
       }>;
     avatar: Schema.Attribute.Media<'images' | 'files'>;
-    businessId: Schema.Attribute.Integer;
-    city: Schema.Attribute.String &
-      Schema.Attribute.SetMinMaxLength<{
-        maxLength: 45;
-      }>;
     confirmEmail: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     countryId: Schema.Attribute.Relation<'manyToOne', 'api::country.country'>;
     createdAt: Schema.Attribute.DateTime;
@@ -953,7 +906,6 @@ export interface ApiUsersAlgiraUsersAlgira extends Struct.CollectionTypeSchema {
       'api::users-algira.users-algira'
     > &
       Schema.Attribute.Private;
-    orders: Schema.Attribute.Relation<'oneToMany', 'api::order.order'>;
     password: Schema.Attribute.Password &
       Schema.Attribute.Required &
       Schema.Attribute.SetMinMaxLength<{
@@ -1556,7 +1508,6 @@ declare module '@strapi/strapi' {
       'api::contact.contact': ApiContactContact;
       'api::country.country': ApiCountryCountry;
       'api::invoice.invoice': ApiInvoiceInvoice;
-      'api::order.order': ApiOrderOrder;
       'api::product.product': ApiProductProduct;
       'api::raffle-winner.raffle-winner': ApiRaffleWinnerRaffleWinner;
       'api::raffle.raffle': ApiRaffleRaffle;

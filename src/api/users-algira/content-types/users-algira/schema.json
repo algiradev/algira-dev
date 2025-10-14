@@ -62,13 +62,8 @@
       "type": "string",
       "maxLength": 100
     },
-    "city": {
-      "type": "string",
-      "maxLength": 45
-    },
-    "businessId": {
-      "type": "integer"
-    },
+    
+    
     "countryId": {
       "type": "relation",
       "relation": "manyToOne",
@@ -88,12 +83,7 @@
       "maxLength": 1,
       "required": true
     },
-    "orders": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::order.order",
-      "mappedBy": "users_algira"
-    },
+    
     "invoices": {
       "type": "relation",
       "relation": "oneToMany",

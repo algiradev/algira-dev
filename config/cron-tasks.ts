@@ -66,7 +66,7 @@ export default {
 
                 emitRaffleDraw({
                   raffleId: raffle.id,
-                  ticketNumber: 0,
+                  ticketNumber: "0",
                   userName: "No hubo ganador",
                   userEmail: "",
                   noTickets: true,

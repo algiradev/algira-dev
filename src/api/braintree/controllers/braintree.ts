@@ -31,8 +31,6 @@ export default {
     }
   },
 
-  // ./src/api/payment/controllers/payment.ts (o .js según tu setup)
-
   async processPayment(ctx: Context) {
     try {
       let transaction;
@@ -45,7 +43,7 @@ export default {
         paymentMethodNonce: string;
         amount: number;
         raffles: number[];
-        tickets: { number: number; raffleId: number }[];
+        tickets: { number: string; raffleId: number }[];
       };
 
       if (!paymentMethodNonce) ctx.throw(400, "paymentMethodNonce is required");
@@ -73,8 +71,6 @@ export default {
         );
       }
 
-      // const transaction = result.transaction;
-
       // 🔹 Crear factura
       const newInvoice = await strapi.entityService.create(
         "api::invoice.invoice",
@@ -94,7 +90,7 @@ export default {
       // 🔹 Crear tickets asociados
       const ticketsData = tickets.map((t) => ({
         code: `${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
-        number: t.number,
+        number: String(t.number),
         invoiceId: newInvoice.id,
         raffle: t.raffleId,
       }));
@@ -117,7 +113,7 @@ export default {
       const userName = ctx.state.user?.username ?? "Usuario";
 
       // 🔹 Agrupar tickets por rifa
-      const ticketsByRaffle: Record<number, number[]> = {};
+      const ticketsByRaffle: Record<string, string[]> = {};
       ticketsData.forEach((t) => {
         if (!ticketsByRaffle[t.raffle]) ticketsByRaffle[t.raffle] = [];
         ticketsByRaffle[t.raffle].push(t.number);
