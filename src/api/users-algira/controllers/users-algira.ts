@@ -108,7 +108,6 @@ export default {
           phoneNumber: updatedUser.phoneNumber,
           zipCode: updatedUser.zipCode,
           address: updatedUser.address,
-          avatar: updatedUser.avatar,
           city: updatedUser.city,
           businessId: updatedUser.businessId,
           countryId: updatedUser.countryId,

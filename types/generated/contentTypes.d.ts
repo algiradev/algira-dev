@@ -499,6 +499,7 @@ export interface ApiContactContact extends Struct.CollectionTypeSchema {
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     email: Schema.Attribute.Email;
+    image: Schema.Attribute.Media<'images' | 'files'>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -850,12 +851,6 @@ export interface ApiTicketTicket extends Struct.CollectionTypeSchema {
       'oneToMany',
       'api::raffle-winner.raffle-winner'
     >;
-    status_ticket: Schema.Attribute.String &
-      Schema.Attribute.SetMinMaxLength<{
-        maxLength: 1;
-        minLength: 1;
-      }> &
-      Schema.Attribute.DefaultTo<'a'>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
