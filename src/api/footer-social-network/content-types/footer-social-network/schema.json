@@ -1,17 +1,17 @@
 {
   "kind": "collectionType",
-  "collectionName": "comments",
+  "collectionName": "footer_social_networks",
   "info": {
-    "singularName": "comment",
-    "pluralName": "comments",
-    "displayName": "Comment"
+    "singularName": "footer-social-network",
+    "pluralName": "footer-social-networks",
+    "displayName": "FooterSocialNetwork"
   },
   "options": {
     "draftAndPublish": true
   },
   "pluginOptions": {},
   "attributes": {
-    "img": {
+    "icon": {
       "type": "media",
       "multiple": false,
       "required": true,
@@ -20,22 +20,13 @@
         "files"
       ]
     },
-    "comment": {
+    "alt": {
       "type": "string",
-      "maxLength": 30,
-      "required": true
+      "default": "img"
     },
-    "name": {
+    "url": {
       "type": "string",
-      "default": "usuario",
       "required": true
-    },
-    "rating": {
-      "type": "integer",
-      "required": true,
-      "default": 5,
-      "min": 1,
-      "max": 5
     }
   }
 }

@@ -457,7 +457,7 @@ export interface ApiCommentComment extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    img: Schema.Attribute.Media<'images' | 'files'>;
+    img: Schema.Attribute.Media<'images' | 'files'> & Schema.Attribute.Required;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -478,43 +478,6 @@ export interface ApiCommentComment extends Struct.CollectionTypeSchema {
         number
       > &
       Schema.Attribute.DefaultTo<5>;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-  };
-}
-
-export interface ApiContactContact extends Struct.CollectionTypeSchema {
-  collectionName: 'contacts';
-  info: {
-    displayName: 'Contact';
-    pluralName: 'contacts';
-    singularName: 'contact';
-  };
-  options: {
-    draftAndPublish: true;
-  };
-  attributes: {
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    email: Schema.Attribute.Email;
-    image: Schema.Attribute.Media<'images' | 'files'>;
-    locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::contact.contact'
-    > &
-      Schema.Attribute.Private;
-    message: Schema.Attribute.Text &
-      Schema.Attribute.Required &
-      Schema.Attribute.SetMinMaxLength<{
-        maxLength: 250;
-      }>;
-    name: Schema.Attribute.String;
-    publishedAt: Schema.Attribute.DateTime;
-    subject: Schema.Attribute.String;
-    type: Schema.Attribute.Enumeration<['feedback', 'contact']>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -563,6 +526,71 @@ export interface ApiCountryCountry extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiFooterContactFooterContact extends Struct.SingleTypeSchema {
+  collectionName: 'footer_contacts';
+  info: {
+    displayName: 'FooterContact';
+    pluralName: 'footer-contacts';
+    singularName: 'footer-contact';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    email: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'contacto@algira.com'>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::footer-contact.footer-contact'
+    > &
+      Schema.Attribute.Private;
+    phone: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'097108878'>;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiFooterSocialNetworkFooterSocialNetwork
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'footer_social_networks';
+  info: {
+    displayName: 'FooterSocialNetwork';
+    pluralName: 'footer-social-networks';
+    singularName: 'footer-social-network';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    alt: Schema.Attribute.String & Schema.Attribute.DefaultTo<'img'>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    icon: Schema.Attribute.Media<'images' | 'files'> &
+      Schema.Attribute.Required;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::footer-social-network.footer-social-network'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    url: Schema.Attribute.String & Schema.Attribute.Required;
+  };
+}
+
 export interface ApiInvoiceInvoice extends Struct.CollectionTypeSchema {
   collectionName: 'invoices';
   info: {
@@ -606,6 +634,31 @@ export interface ApiInvoiceInvoice extends Struct.CollectionTypeSchema {
       'manyToOne',
       'api::users-algira.users-algira'
     >;
+  };
+}
+
+export interface ApiPingPing extends Struct.CollectionTypeSchema {
+  collectionName: 'pings';
+  info: {
+    displayName: 'Ping';
+    pluralName: 'pings';
+    singularName: 'ping';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<'oneToMany', 'api::ping.ping'> &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    status: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
   };
 }
 
@@ -815,6 +868,42 @@ export interface ApiSliderSlider extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
     title: Schema.Attribute.String & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiSuggestionSuggestion extends Struct.CollectionTypeSchema {
+  collectionName: 'suggestions';
+  info: {
+    displayName: 'Suggestion';
+    pluralName: 'suggestions';
+    singularName: 'suggestion';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    email: Schema.Attribute.Email;
+    image: Schema.Attribute.Media<'images' | 'files'>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::suggestion.suggestion'
+    > &
+      Schema.Attribute.Private;
+    message: Schema.Attribute.Text &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 250;
+      }>;
+    name: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    type: Schema.Attribute.Enumeration<['feedback', 'contact']>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1500,14 +1589,17 @@ declare module '@strapi/strapi' {
       'api::about-us.about-us': ApiAboutUsAboutUs;
       'api::braintree-service.braintree-service': ApiBraintreeServiceBraintreeService;
       'api::comment.comment': ApiCommentComment;
-      'api::contact.contact': ApiContactContact;
       'api::country.country': ApiCountryCountry;
+      'api::footer-contact.footer-contact': ApiFooterContactFooterContact;
+      'api::footer-social-network.footer-social-network': ApiFooterSocialNetworkFooterSocialNetwork;
       'api::invoice.invoice': ApiInvoiceInvoice;
+      'api::ping.ping': ApiPingPing;
       'api::product.product': ApiProductProduct;
       'api::raffle-winner.raffle-winner': ApiRaffleWinnerRaffleWinner;
       'api::raffle.raffle': ApiRaffleRaffle;
       'api::rol.rol': ApiRolRol;
       'api::slider.slider': ApiSliderSlider;
+      'api::suggestion.suggestion': ApiSuggestionSuggestion;
       'api::ticket.ticket': ApiTicketTicket;
       'api::users-algira.users-algira': ApiUsersAlgiraUsersAlgira;
       'plugin::content-releases.release': PluginContentReleasesRelease;

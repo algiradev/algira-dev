@@ -1,7 +1,7 @@
 import type { Context } from "koa";
 
 export default {
-  async createContact(ctx: Context) {
+  async createSuggestion(ctx: Context) {
     try {
       const { name, email, message, type } = ctx.request.body;
 
@@ -13,7 +13,7 @@ export default {
       }
 
       const newContact = await strapi.entityService.create(
-        "api::contact.contact",
+        "api::suggestion.suggestion",
         {
           data: { name, email, message, type },
         }
@@ -27,7 +27,7 @@ export default {
           .upload({
             data: {
               refId: newContact.id,
-              ref: "api::contact.contact",
+              ref: "api::suggestion.suggestion",
               field: "image",
             },
             files: file,
@@ -35,7 +35,7 @@ export default {
 
         if (uploadedFiles && uploadedFiles.length > 0) {
           await strapi.entityService.update(
-            "api::contact.contact",
+            "api::suggestion.suggestion",
             newContact.id,
             {
               data: {
@@ -47,7 +47,7 @@ export default {
       }
 
       const contactWithImage = await strapi.db
-        .query("api::contact.contact")
+        .query("api::suggestion.suggestion")
         .findOne({
           where: { id: newContact.id },
           populate: ["image"],
