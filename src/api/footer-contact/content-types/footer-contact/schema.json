@@ -1,0 +1,25 @@
+{
+  "kind": "singleType",
+  "collectionName": "footer_contacts",
+  "info": {
+    "singularName": "footer-contact",
+    "pluralName": "footer-contacts",
+    "displayName": "FooterContact"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "email": {
+      "type": "string",
+      "default": "contacto@algira.com",
+      "required": true
+    },
+    "phone": {
+      "type": "string",
+      "default": "097108878",
+      "required": true
+    }
+  }
+}

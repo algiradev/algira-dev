@@ -2,8 +2,8 @@ export default {
   routes: [
     {
       method: "POST",
-      path: "/contacts",
-      handler: "contact.createContact",
+      path: "/suggestions",
+      handler: "suggestion.createSuggestion",
       config: {
         auth: false,
       },

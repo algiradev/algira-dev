@@ -1,0 +1,5 @@
+/**
+ * suggestion service
+ */
+
+export default () => ({});
