@@ -17,6 +17,7 @@
     },
     "text": {
       "type": "text",
+      "maxLength": 250,
       "required": false
     },
     "shortText": {
